@@ -8,8 +8,7 @@ jobs:
       - name: Self test
         id: selftest
 
-        # Put your action repo here
-        uses: jacobtomlinson/go-container-action@master
+        uses: alexcaraballo/sidecar_poetry_dependencies@master
 
       - name: Check outputs
         run: |

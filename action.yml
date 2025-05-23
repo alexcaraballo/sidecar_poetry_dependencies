@@ -1,13 +1,29 @@
-name: "Go Container Action Template"
-description: "Get started with Go Container actions"
-author: "Jacob Tomlinson"
+name: "Sidecar Poetry Dependencies"
+description: "A GitHub Action to install dependencies in a sidecar container"
+author: "darkvus"
 inputs:
-  myInput:
-    description: "Input to use"
-    default: "world"
-outputs:
-  myOutput:
-    description: "Output from the action"
+  token:
+    description: "GitHub token"
+    required: true
+  organization:
+    description: "GitHub organization"
+    required: true
+  repository:
+    description: "GitHub repository"
+    required: true
+  branch:
+    description: "GitHub branch"
+    default: "develop"
+    required: false
+  package:
+    description: "Dependency to install"
+    required: true
+  extra_poetry_args:
+    description: "Extra arguments to pass to poetry"
+    required: false
+  package_version:
+    description: "Version of the dependency to install"
+    required: true
 runs:
   using: "docker"
   image: "Dockerfile"
