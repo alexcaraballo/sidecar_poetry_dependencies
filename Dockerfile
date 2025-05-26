@@ -15,6 +15,6 @@ RUN curl -sSL https://install.python-poetry.org | python3 - && \
 WORKDIR /app
 COPY . .
 
-RUN go build -o app .
+RUN go build -o sidecar .
 
-ENTRYPOINT ["/app"]
+ENTRYPOINT ["/app/sidecar"]
