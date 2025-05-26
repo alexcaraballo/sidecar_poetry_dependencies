@@ -3,7 +3,7 @@ name: Build and Publish Sidecar Poetry Dependencies Action
 on:
   push:
     branches:
-      - main
+      - master
     paths:
       - '**.go'
       - Dockerfile
