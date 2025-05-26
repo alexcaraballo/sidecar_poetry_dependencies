@@ -15,16 +15,14 @@ func getRepositoryURL(token string, organization string, repository string) stri
 
 func cloneRepository(token string, organization string, repository string) {
 	repoURL := getRepositoryURL(token, organization, repository)
-	ghClient, err := gh.NewClient(gh.WithAuthToken(token))
-	if err != nil {
-		fmt.Println("Error creating GitHub client:", err)
-		return
-	}
-	_, err = ghClient.Exec("repo", "clone", repoURL)
+	fmt.Println("Running: gh repo clone", repoURL)
+	stdout, stderr, err := gh.Exec("repo", "clone", repoURL)
 	if err != nil {
 		fmt.Println("Error cloning repository:", err)
+		fmt.Println("STDERR:", stderr.String())
 		return
 	}
+	fmt.Println("STDOUT:", stdout.String())
 	fmt.Println("Repository cloned successfully.")
 }
 
