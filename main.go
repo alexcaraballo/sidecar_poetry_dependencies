@@ -9,12 +9,12 @@ import (
 	"github.com/cli/go-gh/v2"
 )
 
-func getRepositoryURL(token string, organization string, repository string) string {
+func getRepositoryURL(organization string, repository string) string {
 	return fmt.Sprintf("https://github.com/%s/%s.git", organization, repository)
 }
 
-func cloneRepository(token string, organization string, repository string) {
-	repoURL := getRepositoryURL(token, organization, repository)
+func cloneRepository(organization string, repository string) {
+	repoURL := getRepositoryURL(organization, repository)
 	fmt.Println("Running: gh repo clone", repoURL)
 	stdout, stderr, err := gh.Exec("repo", "clone", repoURL)
 	if err != nil {
@@ -76,7 +76,7 @@ func main() {
 	extras := os.Getenv("INPUT_EXTRA_POETRY_ARGS")
 
 	os.Setenv("GH_TOKEN", token)
-	cloneRepository(token, organization, repository)
+	cloneRepository(organization, repository)
 
 	err := os.Chdir(repository)
 	if err != nil {
