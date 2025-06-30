@@ -10,7 +10,7 @@ import (
 )
 
 func getRepositoryURL(organization string, repository string) string {
-	return fmt.Sprintf("https://github.com/%s/%s.git", organization, repository)
+	return fmt.Sprintf("%s/%s", organization, repository)
 }
 
 func cloneRepository(organization string, repository string) {
