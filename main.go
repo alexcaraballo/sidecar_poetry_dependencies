@@ -76,9 +76,19 @@ func main() {
 	extras := os.Getenv("INPUT_EXTRA_POETRY_ARGS")
 
 	os.Setenv("GH_TOKEN", token)
+
+	stdout, stderr, err := gh.Exec("auth", "status")
+	if err != nil {
+		fmt.Println("Error checking GH auth status:", err)
+		return
+	}
+	fmt.Println("GH AUTH STATUS:")
+	fmt.Println(stdout.String())
+	fmt.Println(stderr.String())
+
 	cloneRepository(organization, repository)
 
-	err := os.Chdir(repository)
+	err = os.Chdir(repository)
 	if err != nil {
 		fmt.Println("Error changing directory:", err)
 		return
