@@ -10,7 +10,7 @@ import (
 )
 
 func getRepositoryURL(token string, organization string, repository string) string {
-	return fmt.Sprintf("https://x-access-token:%s@github.com/%s/%s.git", token, organization, repository)
+	return fmt.Sprintf("https://github.com/%s/%s.git", organization, repository)
 }
 
 func cloneRepository(token string, organization string, repository string) {
@@ -75,6 +75,7 @@ func main() {
 	version := os.Getenv("INPUT_PACKAGE_VERSION")
 	extras := os.Getenv("INPUT_EXTRA_POETRY_ARGS")
 
+	os.Setenv("GH_TOKEN", token)
 	cloneRepository(token, organization, repository)
 
 	err := os.Chdir(repository)
