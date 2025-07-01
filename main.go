@@ -94,8 +94,8 @@ func commitAndPushChange(branch string, url string) error {
 		"pr", 
 		"create", 
 		"-d",
-		"-t ':arrow_up: chore(deps): update dependency via action'",
-		"-b 'This PR was automatically created by the Sidecar Poetry Dependencies Action.'",
+		"-t :arrow_up: chore(deps): update dependency via action",
+		"-b This PR was automatically created by the Sidecar Poetry Dependencies Action.",
 	)
 
 	if err != nil {
