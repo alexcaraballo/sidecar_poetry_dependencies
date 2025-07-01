@@ -90,13 +90,21 @@ func commitAndPushChange(branch string, url string) error {
 		}
 	}
 
-	gh.Exec(
+	stdout, stderr, err := gh.Exec(
 		"pr", 
 		"create", 
 		"-d",
 		"-t ':arrow_up: chore(deps): update dependency via action'",
 		"-b 'This PR was automatically created by the Sidecar Poetry Dependencies Action.'",
 	)
+
+	if err != nil {
+		fmt.Println("Error pr create:", err)
+		fmt.Println("STDERR:", stderr.String())
+		return err
+	}
+	fmt.Println("STDOUT:", stdout.String())
+	fmt.Println("Pr created successfully.")
 
 	return nil
 }
