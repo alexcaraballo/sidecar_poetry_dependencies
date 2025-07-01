@@ -103,7 +103,7 @@ func commitAndPushChange(branch string, url string) error {
 		fmt.Println("STDERR:", stderr.String())
 		return err
 	}
-	fmt.Println("STDOUT:", stdout.String())
+	fmt.Println("Pull Request URL:", stdout.String())
 	fmt.Println("Pr created successfully.")
 
 	return nil
