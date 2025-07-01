@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/cli/go-gh/v2"
+	"github.com/sidecar-poetry-dependencies/models"
 )
 
 func getRepositoryURL(organization string, repository string) string {
@@ -26,8 +27,25 @@ func cloneRepository(organization string, repository string) {
 	fmt.Println("Repository cloned successfully.")
 }
 
-func poetryAdd(dep, version, extras string) error {
+func poetryAdd(dep, version, extras string, repo *models.PoetryRepository) error {
 	args := []string{"add", fmt.Sprintf("%s==%s", dep, version)}
+
+	if repo != nil {
+		fmt.Printf("Configuring poetry repository: %s\n", repo.Name)
+		cmd := exec.Command("poetry", "config", fmt.Sprintf("repositories.%s", repo.Name), repo.URL)
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		if err := cmd.Run(); err != nil {
+			return err
+		}
+
+		cmd = exec.Command("poetry", "config", fmt.Sprintf("http-basic.%s", repo.Name), repo.User, repo.Password)
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		if err := cmd.Run(); err != nil {
+			return err
+		}
+	}
 
 	extraList := strings.Split(strings.TrimSpace(extras), ",")
 	for _, extra := range extraList {
@@ -74,6 +92,22 @@ func main() {
 	dep := os.Getenv("INPUT_PACKAGE")
 	version := os.Getenv("INPUT_PACKAGE_VERSION")
 	extras := os.Getenv("INPUT_EXTRA_POETRY_ARGS")
+	repository_name := os.Getenv("INPUT_REPOSITORY_NAME")
+	repository_url := os.Getenv("INPUT_REPOSITORY_URL")
+	repository_user := os.Getenv("INPUT_REPOSITORY_USERNAME")
+	repository_password := os.Getenv("INPUT_REPOSITORY_PASSWORD")
+
+	var repo *models.PoetryRepository = nil
+
+	if repository_name != "" && repository_url != ""  && repository_user != "" && repository_password != "" {
+		repo := models.PoetryRepository{
+				Name:     repository_name,
+				URL:      repository_url,
+				User:     repository_user,
+				Password: repository_password,
+			}
+			fmt.Printf("Using custom poetry repository: %+v\n", repo)
+	}
 
 	os.Setenv("GH_TOKEN", token)
 
@@ -94,7 +128,7 @@ func main() {
 		return
 	}
 
-	err = poetryAdd(dep, version, extras)
+	err = poetryAdd(dep, version, extras, repo)
 	if err != nil {
 		fmt.Println("Error running poetry add:", err)
 		return

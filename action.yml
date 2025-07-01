@@ -24,6 +24,18 @@ inputs:
   package_version:
     description: "Version of the dependency to install"
     required: true
+  repository_name:
+    description: "Name of the repository to install from"
+    required: false
+  repository_url:
+    description: "URL of the repository to install from"
+    required: false
+  repository_username:
+    description: "Username for the repository"
+    required: false
+  repository_password:
+    description: "Password for the repository"
+    required: false
 runs:
   using: "docker"
   image: "Dockerfile"
