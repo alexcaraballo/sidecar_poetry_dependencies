@@ -89,13 +89,22 @@ func commitAndPushChange(branch string, url string) error {
 			return err
 		}
 	}
+
+	gh.Exec(
+		"pr", 
+		"create", 
+		"-d",
+		"-t ':arrow_up: chore(deps): update dependency via action'",
+		"-b 'This PR was automatically created by the Sidecar Poetry Dependencies Action.'",
+	)
+
 	return nil
 }
 
 func main() {
 	token := os.Getenv("INPUT_TOKEN")
 	organization := os.Getenv("INPUT_ORGANIZATION")
-	repository := os.Getenv("INPUT_REPOSITORY")
+	repositories := os.Getenv("INPUT_REPOSITORY")
 	branch := os.Getenv("INPUT_BRANCH")
 	dep := os.Getenv("INPUT_PACKAGE")
 	version := os.Getenv("INPUT_PACKAGE_VERSION")
@@ -122,31 +131,43 @@ func main() {
 	stdout, stderr, err := gh.Exec("auth", "status")
 	if err != nil {
 		fmt.Println("Error checking GH auth status:", err)
-		return
+		os.Exit(1)
 	}
 	fmt.Println("GH AUTH STATUS:")
 	fmt.Println(stdout.String())
 	fmt.Println(stderr.String())
 
-	cloneRepository(organization, repository)
+	repositoriesList := strings.Split(strings.TrimSpace(repositories), ",")
+	for _, repository := range repositoriesList {
+		repository = strings.TrimSpace(repository)
+		if repository != "" {
+			cloneRepository(organization, repository)
 
-	err = os.Chdir(repository)
-	if err != nil {
-		fmt.Println("Error changing directory:", err)
-		return
-	}
+			err = os.Chdir(repository)
+			if err != nil {
+				fmt.Println("Error changing directory:", err)
+				os.Exit(1)
+			}
 
-	err = poetryAdd(dep, version, extras, repo)
-	if err != nil {
-		fmt.Println("Error running poetry add:", err)
-		return
-	}
-	fmt.Println("Dependency added successfully.")
+			err = poetryAdd(dep, version, extras, repo)
+			if err != nil {
+				fmt.Println("Error running poetry add:", err)
+				os.Exit(1)
+			}
+			fmt.Println("Dependency added successfully.")
 
-	err = commitAndPushChange(branch, fmt.Sprintf("https://%s@github.com/%s/%s.git", token, organization, repository))
-	if err != nil {
-		fmt.Println("Error committing and pushing changes:", err)
-		return
+			err = commitAndPushChange(branch, fmt.Sprintf("https://%s@github.com/%s/%s.git", token, organization, repository))
+			if err != nil {
+				fmt.Println("Error committing and pushing changes:", err)
+				os.Exit(1)
+			}
+			err = os.Chdir("..")
+			if err != nil {
+				fmt.Println("Error changing back to parent directory:", err)
+				os.Exit(1)
+			}
+		}
 	}
+	
 	fmt.Println("Changes committed and pushed successfully.")
 }
