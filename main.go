@@ -62,7 +62,15 @@ func poetryAdd(dep, version, extras string, repo *models.PoetryRepository) error
 	return cmd.Run()
 }
 
-func commitAndPushChange(branch string) error {
+func commitAndPushChange(branch string, url string) error {
+	
+	cmd := exec.Command("git", "remote", "set-url", "origin", url)
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	if err := cmd.Run(); err != nil {
+		return err
+
+	}
 	cmds := [][]string{
 		{"git", "checkout", "-b", branch},
 		{"git", "config", "user.name", "github-actions"},
@@ -135,7 +143,7 @@ func main() {
 	}
 	fmt.Println("Dependency added successfully.")
 
-	err = commitAndPushChange(branch)
+	err = commitAndPushChange(branch, fmt.Sprintf("https://%s@github.com/%s/%s.git", token, organization, repository))
 	if err != nil {
 		fmt.Println("Error committing and pushing changes:", err)
 		return
